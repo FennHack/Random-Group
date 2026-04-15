@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembagi Grup Acak - Kelas X E8</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            color: #fff;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .class-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 8px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            color: #1e2937;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            padding: 35px;
+            margin-bottom: 30px;
+        }
+        h3 {
+            color: #1e40af;
+            margin-bottom: 15px;
+        }
+        textarea {
+            width: 100%;
+            height: 240px;
+            padding: 18px;
+            border: 2px solid #93c5fd;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            resize: vertical;
+            background: #f8fafc;
+        }
+        .input-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 35px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        .radio-group {
+            display: flex;
+            gap: 25px;
+            font-size: 1.05rem;
+        }
+        label {
+            cursor: pointer;
+            font-weight: 500;
+        }
+        input[type="radio"] {
+            accent-color: #3b82f6;
+        }
+        input[type="number"] {
+            width: 120px;
+            padding: 12px;
+            border: 2px solid #93c5fd;
+            border-radius: 10px;
+            font-size: 1.1rem;
+        }
+        .checkbox {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.1rem;
+        }
+        button {
+            padding: 16px 32px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-3px);
+        }
+        .btn-secondary {
+            background: #64748b;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #475569;
+        }
+        .result {
+            margin-top: 30px;
+        }
+        .group {
+            background: #f0f9ff;
+            border: 3px solid #3b82f6;
+            border-radius: 16px;
+            padding: 22px;
+            margin-bottom: 25px;
+        }
+        .group-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .members {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .member {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 2px solid #bfdbfe;
+            font-size: 1.05rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .leader {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+            font-weight: 700;
+        }
+        .actions {
+            margin-top: 25px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            color: rgba(255,255,255,0.8);
+            font-size: 1rem;
+        }
+        @media (max-width: 768px) {
+            .input-section {
+                grid-template-columns: 1fr;
+            }
+            h1 { font-size: 2.3rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="class-badge">🏫 KELAS X E8</div>
+            <h1>Pembagi Grup Acak</h1>
+            <p class="subtitle">Mari bagi kelompok belajar / tugas / game dengan cepat dan adil!</p>
+        </header>
+
+        <div class="card">
+            <div class="input-section">
+                <!-- Daftar Nama -->
+                <div>
+                    <h3>👥 Daftar Nama Siswa Kelas X E8</h3>
+                    <p style="margin-bottom:12px; color:#475569; font-size:0.98rem;">
+                        Tulis satu nama per baris
+                    </p>
+                    <textarea id="names" placeholder="Contoh:
+Ahmad
+Sinta
+Budi
+Rina
+Dimas
+Putri
+Fahmi"></textarea>
+                </div>
+
+                <!-- Pengaturan -->
+                <div class="options">
+                    <div>
+                        <h3>Cara Membagi Grup</h3>
+                        <div class="radio-group">
+                            <label>
+                                <input type="radio" name="mode" value="groups" checked> 
+                                Jumlah Grup
+                            </label>
+                            <label>
+                                <input type="radio" name="mode" value="members"> 
+                                Jumlah Anggota per Grup
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="count"><strong>Jumlah:</strong></label><br>
+                        <input type="number" id="count" value="4" min="1">
+                    </div>
+
+                    <div class="checkbox">
+                        <input type="checkbox" id="leader" checked>
+                        <label for="leader">Pilih 1 Ketua/Koordinator acak di setiap grup 👑</label>
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn-primary" onclick="generateGroups()">🔀 Bagi Grup Sekarang</button>
+                        <button class="btn-secondary" onclick="exportCSV()">📥 Ekspor ke CSV</button>
+                        <button class="btn-secondary" onclick="clearAll()">🗑️ Hapus Semua</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hasil Pembagian -->
+        <div class="card result" id="resultSection" style="display: none;">
+            <h2 style="color:#1e40af; margin-bottom: 25px;">📋 Hasil Pembagian Grup Kelas X E8</h2>
+            <div id="groupsContainer"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Kelas X E8 • Tahun Pelajaran 2025/2026 • Semoga kelompoknya seru dan produktif! 🚀</p>
+    </footer>
+
+    <script>
+        function generateGroups() {
+            const namesText = document.getElementById('names').value.trim();
+            if (!namesText) {
+                alert("⚠️ Masukkan dulu daftar nama siswa Kelas X E8!");
+                return;
+            }
+
+            let names = namesText.split('\n')
+                .map(name => name.trim())
+                .filter(name => name.length > 0);
+
+            if (names.length < 2) {
+                alert("Minimal masukkan 2 nama siswa!");
+                return;
+            }
+
+            const mode = document.querySelector('input[name="mode"]:checked').value;
+            let count = parseInt(document.getElementById('count').value) || 4;
+            const withLeader = document.getElementById('leader').checked;
+
+            // Acak nama
+            const shuffled = [...names].sort(() => Math.random() - 0.5);
+
+            let groups = [];
+            if (mode === "groups") {
+                const groupSize = Math.ceil(shuffled.length / count);
+                for (let i = 0; i < count; i++) {
+                    groups.push(shuffled.slice(i * groupSize, (i + 1) * groupSize));
+                }
+            } else {
+                const groupSize = count;
+                for (let i = 0; i < shuffled.length; i += groupSize) {
+                    groups.push(shuffled.slice(i, i + groupSize));
+                }
+            }
+
+            // Tampilkan hasil
+            const container = document.getElementById('groupsContainer');
+            container.innerHTML = '';
+
+            groups.forEach((group, index) => {
+                if (group.length === 0) return;
+
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'group';
+
+                let html = `
+                    <div class="group-title">
+                        🏷️ Grup ${index + 1} 
+                        <span style="font-size:1rem; font-weight:500; color:#64748b;">(${group.length} orang)</span>
+                    </div>
+                    <div class="members">
+                `;
+
+                if (withLeader && group.length > 0) {
+                    html += `<span class="member leader">👑 ${group[0]} (Ketua)</span>`;
+                    for (let i = 1; i < group.length; i++) {
+                        html += `<span class="member">${group[i]}</span>`;
+                    }
+                } else {
+                    group.forEach(member => {
+                        html += `<span class="member">${member}</span>`;
+                    });
+                }
+
+                html += `</div>`;
+                groupDiv.innerHTML = html;
+                container.appendChild(groupDiv);
+            });
+
+            document.getElementById('resultSection').style.display = 'block';
+            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function exportCSV() {
+            const groups = document.querySelectorAll('.group');
+            if (groups.length === 0) {
+                alert("Belum ada hasil yang bisa diekspor.");
+                return;
+            }
+
+            let csv = "Grup,Nama,Status\n";
+            groups.forEach((group, gIndex) => {
+                const title = `Grup ${gIndex + 1}`;
+                const members = group.querySelectorAll('.member');
+                members.forEach(member => {
+                    const name = member.textContent.replace(' (Ketua)', '').replace('👑 ', '').trim();
+                    const status = member.classList.contains('leader') ? 'Ketua' : 'Anggota';
+                    csv += `"\( {title}"," \){name}","${status}"\n`;
+                });
+            });
+
+            const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csv);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Pembagian_Grup_Kelas_X_E8.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function clearAll() {
+            if (confirm("Hapus semua nama dan hasil?")) {
+                document.getElementById('names').value = '';
+                document.getElementById('resultSection').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
