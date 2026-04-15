@@ -54,9 +54,9 @@ button{margin:5px;padding:10px;}
 
 <script>
 
-// ===== FIXED GROUP=====
+// ===== FIXED GROUP (TERSEMBUNYI) =====
 const FIXED_GROUPS = [
-    ["Rama","Tiara"],
+    ["RaMa","Tiara"],
 ];
 
 // shuffle
@@ -106,6 +106,141 @@ function generate(){
         groups=Array.from({length:count},()=>[]);
         let i=0;
 
+        FIXED_GROUPS.forEach(g=>{
+            groups[i%count].push(...g);
+            i++;
+        });
+
+        remaining.forEach(n=>{
+            groups[i%count].push(n);
+            i++;
+        });
+
+    }else{
+        let combined=[...FIXED_GROUPS.flat(),...remaining];
+        combined=shuffle(combined);
+
+        for(let i=0;i<combined.length;i+=count){
+            groups.push(combined.slice(i,i+count));
+        }
+    }
+
+    // 🔥 ACAK POSISI GRUP
+    groups = shuffle(groups);
+
+    // 🔥 ACAK ISI DALAM GRUP
+    groups = groups.map(g => shuffle(g));
+
+    let result=document.getElementById("result");
+    result.innerHTML="";
+
+    groups.forEach((g,i)=>{
+        if(g.length===0)return;
+
+        let html=`<div class="group"><b>Grup ${i+1}</b><br>`;
+
+        let leaderIndex=leader?Math.floor(Math.random()*g.length):-1;
+
+        g.forEach((m,idx)=>{
+            if(idx===leaderIndex){
+                html+=`<span class="member leader">👑 ${m}</span>`;
+            }else{
+                html+=`<span class="member">${m}</span>`;
+            }
+        });
+
+        html+="</div>";
+        result.innerHTML+=html;
+    });
+
+    result.style.display="block";
+}
+
+// csv
+function downloadCSV(){
+    let groups=document.querySelectorAll(".group");
+    if(groups.length===0)return alert("Belum ada hasil");
+
+    let csv="Grup,Nama,Status\n";
+
+    groups.forEach((g,i)=>{
+        g.querySelectorAll(".member").forEach(m=>{
+            let name=m.textContent.replace("👑 ","");
+            let status=m.classList.contains("leader")?"Ketua":"Anggota";
+            csv+=`Grup ${i+1},${name},${status}\n`;
+        });
+    });
+
+    let a=document.createElement("a");
+    a.href="data:text/csv;charset=utf-8,"+encodeURI(csv);
+    a.download="grup.csv";
+    a.click();
+}
+
+// save
+function save(){
+    localStorage.setItem("data",document.getElementById("names").value);
+}
+
+// load
+function load(){
+    let d=localStorage.getItem("data");
+    if(d)document.getElementById("names").value=d;
+}
+
+// clear
+function clearAll(){
+    document.getElementById("names").value="";
+    document.getElementById("result").style.display="none";
+}
+
+// auto isi
+window.onload=function(){
+    if(localStorage.getItem("data")){
+        load();
+    }else{
+        document.getElementById("names").value=`Abiy (CO)
+Dyllan (CO)
+Amar (CO)
+Hakim (CO)
+Argian (CO)
+Fira (CE)
+Venus (CE)
+Mahes (CO)
+Fadhil (CO)
+Nazhira (CE)
+Putra (CO)
+Farra (CE)
+Liana (CE)
+Fendra (CO)
+Hagan (CO)
+Isna (CE)
+Cello (CO)
+Aliya (CE)
+Tiara (CE)
+Naswa (CE)
+Naura (CE)
+Nurin (CE)
+Nuzul (CE)
+Putri (CE)
+Neta (CE)
+RaMa (CO)
+Rafa (CO)
+Rasti (CE)
+Reisan (CO)
+Valent (CO)
+Rofi (CO)
+Salma (CE)
+Chia (CE)
+Kinan (CE)
+Shifa (CE)
+Zafiya (CE)`;
+    }
+}
+</script>
+
+</body>
+</html>
         FIXED_GROUPS.forEach(g=>{
             groups[i%count].push(...g);
             i++;
