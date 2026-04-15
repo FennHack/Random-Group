@@ -35,7 +35,9 @@ button{margin:5px;padding:10px;}
 <textarea id="names"></textarea><br>
 
 <label><input type="radio" name="mode" value="groups" checked> Jumlah Grup</label>
-<label><input type="radio" name="mode" value="members"> Anggota per Grup</label><br><br>
+<label><input type="radio" name="mode" value="members"> Anggota per Grup</label>
+<label><input type="radio" name="mode" value="separate"> Pisah Cowok & Cewek</label>
+<br><br>
 
 <input type="number" id="count" value="4"><br><br>
 
@@ -87,18 +89,73 @@ function generate(){
         }
     });
 
+    let mode=document.querySelector('input[name="mode"]:checked').value;
+    let count=parseInt(document.getElementById("count").value);
+    let leader=document.getElementById("leader").checked;
+
+    let result=document.getElementById("result");
+    result.innerHTML="";
+
+    // ================= MODE SEPARATE =================
+    if(mode==="separate"){
+        let groupsCO = Array.from({length:count},()=>[]);
+        let groupsCE = Array.from({length:count},()=>[]);
+
+        co = shuffle(co);
+        ce = shuffle(ce);
+
+        co.forEach((n,i)=>groupsCO[i%count].push(n));
+        ce.forEach((n,i)=>groupsCE[i%count].push(n));
+
+        groupsCO = shuffle(groupsCO).map(g=>shuffle(g));
+        groupsCE = shuffle(groupsCE).map(g=>shuffle(g));
+
+        groupsCO.forEach((g,i)=>{
+            if(g.length===0)return;
+            let html=`<div class="group"><b>Grup Cowok ${i+1}</b><br>`;
+            let li=Math.floor(Math.random()*g.length);
+
+            g.forEach((m,idx)=>{
+                if(leader && idx===li){
+                    html+=`<span class="member leader">👑 ${m}</span>`;
+                }else{
+                    html+=`<span class="member">${m}</span>`;
+                }
+            });
+
+            html+="</div>";
+            result.innerHTML+=html;
+        });
+
+        groupsCE.forEach((g,i)=>{
+            if(g.length===0)return;
+            let html=`<div class="group"><b>Grup Cewek ${i+1}</b><br>`;
+            let li=Math.floor(Math.random()*g.length);
+
+            g.forEach((m,idx)=>{
+                if(leader && idx===li){
+                    html+=`<span class="member leader">👑 ${m}</span>`;
+                }else{
+                    html+=`<span class="member">${m}</span>`;
+                }
+            });
+
+            html+="</div>";
+            result.innerHTML+=html;
+        });
+
+        result.style.display="block";
+        return;
+    }
+
+    // ================= MODE NORMAL =================
     let allNames=[...co,...ce,...other];
 
-    // ===== APPLY FIXED =====
     let used=new Set();
     FIXED_GROUPS.forEach(g=>g.forEach(n=>used.add(n)));
 
     let remaining=allNames.filter(n=>!used.has(n));
     remaining=shuffle(remaining);
-
-    let mode=document.querySelector('input[name="mode"]:checked').value;
-    let count=parseInt(document.getElementById("count").value);
-    let leader=document.getElementById("leader").checked;
 
     let groups=[];
 
@@ -125,24 +182,17 @@ function generate(){
         }
     }
 
-    // 🔥 ACAK POSISI GRUP
     groups = shuffle(groups);
-
-    // 🔥 ACAK ISI DALAM GRUP
     groups = groups.map(g => shuffle(g));
-
-    let result=document.getElementById("result");
-    result.innerHTML="";
 
     groups.forEach((g,i)=>{
         if(g.length===0)return;
 
         let html=`<div class="group"><b>Grup ${i+1}</b><br>`;
-
-        let leaderIndex=leader?Math.floor(Math.random()*g.length):-1;
+        let li=Math.floor(Math.random()*g.length);
 
         g.forEach((m,idx)=>{
-            if(idx===leaderIndex){
+            if(leader && idx===li){
                 html+=`<span class="member leader">👑 ${m}</span>`;
             }else{
                 html+=`<span class="member">${m}</span>`;
@@ -228,8 +278,8 @@ RaMa (CO)
 Rafa (CO)
 Rasti (CE)
 Reisan (CO)
-Valent (CO)
-Rofi (CO)
+Valent (CE)
+Rofi (CE)
 Salma (CE)
 Chia (CE)
 Kinan (CE)
