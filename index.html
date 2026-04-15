@@ -1,111 +1,246 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pembagi Grup Acak - Kelas X E8</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-            color: #fff;
-            min-height: 100vh;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pembagi Grup X E8</title>
+
+<style>
+body{
+    font-family:sans-serif;
+    background:linear-gradient(135deg,#1e3a8a,#3b82f6);
+    color:#fff;
+}
+.container{max-width:1000px;margin:30px auto;}
+.card{
+    background:#fff;
+    color:#000;
+    padding:20px;
+    border-radius:12px;
+    margin-bottom:20px;
+}
+textarea{width:100%;height:180px;}
+button{margin:5px;padding:10px;}
+.group{background:#eef;border-radius:10px;padding:10px;margin:10px 0;}
+.member{display:inline-block;background:#fff;margin:4px;padding:6px 10px;border-radius:20px;}
+.leader{background:#ef4444;color:#fff;}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+<textarea id="names"></textarea><br>
+
+<label><input type="radio" name="mode" value="groups" checked> Jumlah Grup</label>
+<label><input type="radio" name="mode" value="members"> Anggota per Grup</label><br><br>
+
+<input type="number" id="count" value="4"><br><br>
+
+<label><input type="checkbox" id="leader" checked> Ketua</label><br><br>
+
+<button onclick="generate()">Bagi</button>
+<button onclick="downloadCSV()">CSV</button>
+<button onclick="save()">Simpan</button>
+<button onclick="load()">Load</button>
+<button onclick="clearAll()">Hapus</button>
+</div>
+
+<div class="card" id="result" style="display:none;"></div>
+
+</div>
+
+<script>
+
+// ===== FIXED GROUP=====
+const FIXED_GROUPS = [
+//    ["Abiy","Fira"],
+];
+
+// shuffle
+function shuffle(arr){
+    for(let i=arr.length-1;i>0;i--){
+        let j=Math.floor(Math.random()*(i+1));
+        [arr[i],arr[j]]=[arr[j],arr[i]];
+    }
+    return arr;
+}
+
+// generate
+function generate(){
+    let input=document.getElementById("names").value.trim();
+    if(!input)return alert("Isi dulu");
+
+    let lines=input.split("\n").map(x=>x.trim()).filter(x=>x);
+
+    let co=[],ce=[],other=[];
+
+    lines.forEach(n=>{
+        if(n.toUpperCase().includes("(CO)")){
+            co.push(n.replace("(CO)","").trim());
+        }else if(n.toUpperCase().includes("(CE)")){
+            ce.push(n.replace("(CE)","").trim());
+        }else{
+            other.push(n);
         }
-        .container {
-            max-width: 1100px;
-            margin: 40px auto;
-            padding: 20px;
+    });
+
+    let allNames=[...co,...ce,...other];
+
+    // ===== APPLY FIXED =====
+    let used=new Set();
+    FIXED_GROUPS.forEach(g=>g.forEach(n=>used.add(n)));
+
+    let remaining=allNames.filter(n=>!used.has(n));
+    remaining=shuffle(remaining);
+
+    let mode=document.querySelector('input[name="mode"]:checked').value;
+    let count=parseInt(document.getElementById("count").value);
+    let leader=document.getElementById("leader").checked;
+
+    let groups=[];
+
+    if(mode==="groups"){
+        groups=Array.from({length:count},()=>[]);
+        let i=0;
+
+        FIXED_GROUPS.forEach(g=>{
+            groups[i%count].push(...g);
+            i++;
+        });
+
+        remaining.forEach(n=>{
+            groups[i%count].push(n);
+            i++;
+        });
+
+    }else{
+        let combined=[...FIXED_GROUPS.flat(),...remaining];
+        combined=shuffle(combined);
+
+        for(let i=0;i<combined.length;i+=count){
+            groups.push(combined.slice(i,i+count));
         }
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        .class-badge {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-            backdrop-filter: blur(10px);
-        }
-        h1 {
-            font-size: 2.8rem;
-            margin-bottom: 8px;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            color: #1e2937;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-            padding: 35px;
-            margin-bottom: 30px;
-        }
-        h3 {
-            color: #1e40af;
-            margin-bottom: 15px;
-        }
-        textarea {
-            width: 100%;
-            height: 240px;
-            padding: 18px;
-            border: 2px solid #93c5fd;
-            border-radius: 12px;
-            font-size: 1.05rem;
-            resize: vertical;
-            background: #f8fafc;
-        }
-        .input-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 35px;
-        }
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-        .radio-group {
-            display: flex;
-            gap: 25px;
-            font-size: 1.05rem;
-        }
-        label {
-            cursor: pointer;
-            font-weight: 500;
-        }
-        input[type="radio"] {
-            accent-color: #3b82f6;
-        }
-        input[type="number"] {
-            width: 120px;
-            padding: 12px;
-            border: 2px solid #93c5fd;
-            border-radius: 10px;
-            font-size: 1.1rem;
-        }
-        .checkbox {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 1.1rem;
-        }
-        button {
-            padding: 16px 32px;
-            font-size: 1.15rem;
-            font-weight: 600;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
+    }
+
+    // 🔥 ACAK POSISI GRUP
+    groups = shuffle(groups);
+
+    // 🔥 ACAK ISI DALAM GRUP
+    groups = groups.map(g => shuffle(g));
+
+    let result=document.getElementById("result");
+    result.innerHTML="";
+
+    groups.forEach((g,i)=>{
+        if(g.length===0)return;
+
+        let html=`<div class="group"><b>Grup ${i+1}</b><br>`;
+
+        let leaderIndex=leader?Math.floor(Math.random()*g.length):-1;
+
+        g.forEach((m,idx)=>{
+            if(idx===leaderIndex){
+                html+=`<span class="member leader">👑 ${m}</span>`;
+            }else{
+                html+=`<span class="member">${m}</span>`;
+            }
+        });
+
+        html+="</div>";
+        result.innerHTML+=html;
+    });
+
+    result.style.display="block";
+}
+
+// csv
+function downloadCSV(){
+    let groups=document.querySelectorAll(".group");
+    if(groups.length===0)return alert("Belum ada hasil");
+
+    let csv="Grup,Nama,Status\n";
+
+    groups.forEach((g,i)=>{
+        g.querySelectorAll(".member").forEach(m=>{
+            let name=m.textContent.replace("👑 ","");
+            let status=m.classList.contains("leader")?"Ketua":"Anggota";
+            csv+=`Grup ${i+1},${name},${status}\n`;
+        });
+    });
+
+    let a=document.createElement("a");
+    a.href="data:text/csv;charset=utf-8,"+encodeURI(csv);
+    a.download="grup.csv";
+    a.click();
+}
+
+// save
+function save(){
+    localStorage.setItem("data",document.getElementById("names").value);
+}
+
+// load
+function load(){
+    let d=localStorage.getItem("data");
+    if(d)document.getElementById("names").value=d;
+}
+
+// clear
+function clearAll(){
+    document.getElementById("names").value="";
+    document.getElementById("result").style.display="none";
+}
+
+// auto isi
+window.onload=function(){
+    if(localStorage.getItem("data")){
+        load();
+    }else{
+        document.getElementById("names").value=`Abiy (CO)
+Dyllan (CO)
+Amar (CO)
+Hakim (CO)
+Argian (CO)
+Fira (CE)
+Venus (CE)
+Mahes (CO)
+Fadhil (CO)
+Nazhira (CE)
+Putra (CO)
+Farra (CE)
+Liana (CE)
+Fendra (CO)
+Hagan (CO)
+Isna (CE)
+Cello (CO)
+Aliya (CE)
+Tiara (CE)
+Naswa (CE)
+Naura (CE)
+Nurin (CE)
+Nuzul (CE)
+Putri (CE)
+Neta (CE)
+RaMa (CO)
+Rafa (CO)
+Rasti (CE)
+Reisan (CO)
+Valent (CO)
+Rofi (CO)
+Salma (CE)
+Chia (CE)
+Kinan (CE)
+Shifa (CE)
+Zafiya (CE)`;
+    }
+}
+</script>
+
+</body>
+</html>            cursor: pointer;
             transition: all 0.3s;
         }
         .btn-primary {
